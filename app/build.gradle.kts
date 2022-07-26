@@ -43,6 +43,10 @@ application {
     mainClass.set("io.github.t45k.fpinjava.App")
 }
 
+tasks.named<JavaCompile>("compileJava") {
+    options.compilerArgs = listOf("--enable-preview")
+}
+
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
