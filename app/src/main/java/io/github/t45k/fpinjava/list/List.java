@@ -11,8 +11,7 @@ public sealed interface List<T> permits List.Nil, List.Cons {
         public static Nil INSTANCE = new Nil<>();
     }
 
-    record Cons<T>(T head, List<T> tail) implements List<T> {
-    }
+    record Cons<T>(T head, List<T> tail) implements List<T> {}
 
     @SafeVarargs
     static <A> List<A> of(A... values) {
