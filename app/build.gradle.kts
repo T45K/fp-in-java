@@ -30,9 +30,7 @@ dependencies {
     // Use the latest Groovy version for Spock testing
     testImplementation("org.codehaus.groovy:groovy:3.0.9")
 
-    // Use the awesome Spock testing and specification framework even with Java
-    testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:30.1.1-jre")
@@ -47,7 +45,7 @@ tasks.named<JavaCompile>("compileJava") {
     options.compilerArgs.add("--enable-preview")
 }
 
-tasks.named<GroovyCompile>("compileTestGroovy") {
+tasks.named<JavaCompile>("compileTestJava") {
     options.compilerArgs.add("--enable-preview")
 }
 
