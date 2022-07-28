@@ -44,7 +44,11 @@ application {
 }
 
 tasks.named<JavaCompile>("compileJava") {
-    options.compilerArgs = listOf("--enable-preview")
+    options.compilerArgs.add("--enable-preview")
+}
+
+tasks.named<GroovyCompile>("compileTestGroovy") {
+    options.compilerArgs.add("--enable-preview")
 }
 
 tasks.named<Test>("test") {
