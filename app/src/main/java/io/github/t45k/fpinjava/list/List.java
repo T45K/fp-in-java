@@ -56,11 +56,23 @@ public sealed interface List<T> permits List.Nil, List.Cons {
         return append(List.of(value));
     }
 
+    default <A> List<A> flatMap(final Function<T, List<A>> function) {
+        return this.foldRight((List<A>) Nil.INSTANCE, (a, acc) -> function.apply(a).append(acc));
+    }
+
+    default <A> List<A> map(final Function<T, A> function) {
+        return this.flatMap(function.andThen(List::of));
+    }
+
     // @formatter:off
-    default <A> List<A> flatMap(final Function<T, List<A>> function){
+    default <A, B> List<B> zipWith(final List<A> list, final BiFunction<T, A, B> function) {
         return switch (this) {
             case Nil<T> nil -> Nil.INSTANCE;
-            case Cons<T>(var head, var tail) -> function.apply(head).append(tail.flatMap(function));
+            case Cons<T>(var head, var tail) -> switch (list) {
+                case Nil<A> nil -> Nil.INSTANCE;
+                case Cons<A>(var head2, var tail2) -> new Cons<>(function.apply(head, head2), (tail.zipWith(tail2, function)));
+            };
         };
     }
+    // @formatter:on
 }

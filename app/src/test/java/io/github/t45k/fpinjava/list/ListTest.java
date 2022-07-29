@@ -95,6 +95,13 @@ public class ListTest {
     }
 
     @Test
+    public void testZipWith() {
+        final List<Integer> list1 = List.of(1, 2, 3, 4);
+        final List<Integer> list2 = List.of(5, 6, 7, 8);
+        assertEquals(List.of(6, 8, 10, 12), list1.zipWith(list2, Math::addExact));
+    }
+
+    @Test
     public void testListIsMonad() {
         final Function<Integer, List<Integer>> multiplyList = v -> Stream.generate(() -> v)
             .limit(v)
