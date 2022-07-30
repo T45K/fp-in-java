@@ -1,8 +1,9 @@
-package io.github.t45k.fpinjava.list;
+package io.github.t45k.fpinjava;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public sealed interface List<T> permits List.Nil, List.Cons {
     final class Nil<T> implements List<T> {
@@ -75,4 +76,14 @@ public sealed interface List<T> permits List.Nil, List.Cons {
         };
     }
     // @formatter:on
+
+    default List<T> filter(final Predicate<T> predicate) {
+        return this.flatMap(a -> {
+            if (predicate.test(a)) {
+                return List.of(a);
+            } else {
+                return Nil.INSTANCE;
+            }
+        });
+    }
 }

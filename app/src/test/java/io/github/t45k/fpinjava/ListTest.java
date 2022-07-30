@@ -1,4 +1,4 @@
-package io.github.t45k.fpinjava.list;
+package io.github.t45k.fpinjava;
 
 
 import org.junit.jupiter.api.Test;
