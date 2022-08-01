@@ -2,7 +2,7 @@ package io.github.t45k.fpinjava;
 
 import java.util.function.Function;
 
-public sealed interface Either<E, A> permits Either.Left, Either.Right {
+public sealed interface Either<E, A> extends Monad<A> permits Either.Left, Either.Right {
     record Left<E, A>(E value) implements Either<E, A> {
     }
 

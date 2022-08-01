@@ -3,7 +3,7 @@ package io.github.t45k.fpinjava;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public sealed interface Option<A> permits Option.Some, Option.None {
+public sealed interface Option<A> extends Monad<A> permits Option.Some, Option.None {
 
     record Some<A>(A value) implements Option<A> {
     }

@@ -5,7 +5,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public sealed interface List<T> permits List.Nil, List.Cons {
+public sealed interface List<T> extends Monad<T> permits List.Nil, List.Cons {
     final class Nil<T> implements List<T> {
         private Nil() {
         }
