@@ -1,6 +1,5 @@
 package io.github.t45k.fpinjava;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -8,27 +7,39 @@ import java.util.function.Function;
 public interface For {
 
     static <A, B> Monad<B> yield1(final Monad<A> monadA,
-                                  final Function<A, B> function) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return (Monad<B>) monadA.getClass()
-            .getMethod("map", Function.class)
-            .invoke(monadA, function);
+                                  final Function<A, B> function) {
+        try {
+            return (Monad<B>) monadA.getClass()
+                .getMethod("map", Function.class)
+                .invoke(monadA, function);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static <A, B, C> Monad<C> yield2(final Monad<A> monadA,
                                      final Monad<B> monadB,
-                                     final BiFunction<A, B, C> function) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return (Monad<C>) monadA.getClass()
-            .getMethod("flatMap", Function.class)
-            .invoke(monadA, shelve((A a) -> yield1(monadB, b -> function.apply(a, b))));
+                                     final BiFunction<A, B, C> function) {
+        try {
+            return (Monad<C>) monadA.getClass()
+                .getMethod("flatMap", Function.class)
+                .invoke(monadA, shelve((A a) -> yield1(monadB, b -> function.apply(a, b))));
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     static <A, B, C, D> Monad<D> yield3(final Monad<A> monadA,
                                         final Monad<B> monadB,
                                         final Monad<C> monadC,
-                                        final TriFunction<A, B, C, D> function) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return (Monad<D>) monadA.getClass()
-            .getMethod("flatMap", Function.class)
-            .invoke(monadA, shelve((A a) -> yield2(monadB, monadC, (b, c) -> function.apply(a, b, c))));
+                                        final TriFunction<A, B, C, D> function) {
+        try {
+            return (Monad<D>) monadA.getClass()
+                .getMethod("flatMap", Function.class)
+                .invoke(monadA, shelve((A a) -> yield2(monadB, monadC, (b, c) -> function.apply(a, b, c))));
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static <A, B> Function<A, B> shelve(final ThrowingFunction<A, B> function) {
