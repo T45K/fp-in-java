@@ -1,7 +1,5 @@
 package io.github.t45k.fpinjava;
 
-import com.sun.source.tree.BreakTree;
-
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -56,6 +54,7 @@ public sealed interface Stream<A> extends Monad<A> permits Stream.Empty, Stream.
     // @formatter:on
 
     // @formatter:off
+    // Maybe Current Java does not support fully guard clause i.e., case Cons && n > 0
     default Stream<A> take(final int n) {
         if(n == 0){
             return Empty.INSTANCE;
@@ -80,20 +79,29 @@ public sealed interface Stream<A> extends Monad<A> permits Stream.Empty, Stream.
     // @formatter:on
 
     // @formatter:off
-    default <B> B foldRight(final B initial, final BiFunction<A, B, B> function) {
+    default Stream<A> takeWhile(final Predicate<A> predicate) {
         return switch (this) {
-            case Cons<A>(var head, var tail) -> function.apply(head.get(), tail.get().foldRight(initial, function));
+            case Cons<A>(var head, var tail) -> predicate.test(head.get()) ? new Cons<>(head, tail.map(it -> it.takeWhile(predicate))) : Empty.INSTANCE;
+            case Empty<A> empty -> Empty.INSTANCE;
+        };
+    }
+    // @formatter:on
+
+    // @formatter:off
+    default <B> B foldRight(final B initial, final BiFunction<A, Lazy<B>, B> function) {
+        return switch (this) {
+            case Cons<A>(var head, var tail) -> function.apply(head.get(), tail.map(it -> it.foldRight(initial, function)));
             default -> initial;
         };
     }
     // @formatter:on
 
     default boolean any(final Predicate<A> predicate) {
-        return this.foldRight(false, (a, b) -> predicate.test(a) || b);
+        return this.foldRight(false, (a, b) -> predicate.test(a) || b.get());
     }
 
     default boolean all(final Predicate<A> predicate) {
-        return this.foldRight(false, (a, b) -> predicate.test(a) && b);
+        return this.foldRight(false, (a, b) -> predicate.test(a) && b.get());
     }
 
     // @formatter:off
@@ -111,6 +119,7 @@ public sealed interface Stream<A> extends Monad<A> permits Stream.Empty, Stream.
         };
     }
     // @formatter:on
+
 
     // @formatter:off
     static <A, B> boolean equals(final Stream<A> a, final Stream<B> b) {
@@ -131,4 +140,24 @@ public sealed interface Stream<A> extends Monad<A> permits Stream.Empty, Stream.
         };
     }
     // @formatter:on
+
+    static <A, S> Stream<A> unfold(final S seed, final Function<S, Option<Tuple2<A, S>>> function) {
+        return switch (function.apply(seed)) {
+            case Option.Some<Tuple2<A, S>> some ->
+                new Cons<>(() -> some.value().first(), () -> Stream.unfold(some.value().second(), function));
+            case Option.None<?> none -> Empty.INSTANCE;
+        };
+    }
+
+    default Stream<A> append(final Stream<A> stream) {
+        return this.foldRight(stream, (a, acc) -> new Cons<>(() -> a, acc));
+    }
+
+    default <B> Stream<B> flatMap(final Function<A, Stream<B>> function) {
+        return this.foldRight((Stream<B>) Empty.INSTANCE, (a, acc) -> function.apply(a).append(acc.get()));
+    }
+
+    default <B> Stream<B> map(final Function<A, B> function) {
+        return this.flatMap(function.andThen(Stream::of));
+    }
 }
