@@ -72,4 +72,11 @@ class StreamTest {
         final Stream<Integer> stream = Stream.of(1, 2, 3);
         assertTrue(Stream.equals(Stream.of(1, 2, 2, 3, 3, 3), stream.flatMap(function)));
     }
+
+    @Test
+    public void testFlatMapWithEmpty() {
+        final Function<Integer, Stream<Integer>> function = v -> Stream.Empty.INSTANCE;
+        final Stream<Integer> stream = Stream.of(1, 2, 3);
+        assertEquals(Stream.Empty.INSTANCE, stream.flatMap(function));
+    }
 }
