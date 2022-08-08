@@ -6,11 +6,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public sealed interface List<T> extends Monad<T> permits List.Nil, List.Cons {
-    final class Nil<T> implements List<T> {
+    final class Nil implements List {
         private Nil() {
         }
 
-        public static Nil INSTANCE = new Nil<>();
+        public static Nil INSTANCE = new Nil();
     }
 
     record Cons<T>(T head, List<T> tail) implements List<T> {
@@ -27,7 +27,7 @@ public sealed interface List<T> extends Monad<T> permits List.Nil, List.Cons {
     // @formatter:off
     default <R> R foldRight(final R initialValue, final BiFunction<T, R, R> function) {
         return switch (this) {
-            case Nil<T> nil -> initialValue;
+            case Nil nil -> initialValue;
             case Cons<T>(var head, var tail) -> function.apply(head, tail.foldRight(initialValue, function));
         };
     }
@@ -39,7 +39,7 @@ public sealed interface List<T> extends Monad<T> permits List.Nil, List.Cons {
             @Override
             public R apply(final List<T> list, final R acc) {
                 return switch (list) {
-                    case Nil<T> nil -> acc;
+                    case Nil nil -> acc;
                     case Cons<T>(var head, var tail) -> apply(tail, function.apply(head, acc));
                 };
             }
@@ -68,9 +68,9 @@ public sealed interface List<T> extends Monad<T> permits List.Nil, List.Cons {
     // @formatter:off
     default <A, B> List<B> zipWith(final List<A> list, final BiFunction<T, A, B> function) {
         return switch (this) {
-            case Nil<T> nil -> Nil.INSTANCE;
+            case Nil nil -> Nil.INSTANCE;
             case Cons<T>(var head, var tail) -> switch (list) {
-                case Nil<A> nil -> Nil.INSTANCE;
+                case Nil nil -> Nil.INSTANCE;
                 case Cons<A>(var head2, var tail2) -> new Cons<>(function.apply(head, head2), (tail.zipWith(tail2, function)));
             };
         };

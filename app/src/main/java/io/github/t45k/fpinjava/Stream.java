@@ -145,7 +145,7 @@ public sealed interface Stream<A> extends Monad<A> permits Stream.Empty, Stream.
         return switch (function.apply(seed)) {
             case Option.Some<Tuple2<A, S>> some ->
                 new Cons<>(() -> some.value().first(), () -> Stream.unfold(some.value().second(), function));
-            case Option.None<?> none -> Empty.INSTANCE;
+            case Option.None none -> Empty.INSTANCE;
         };
     }
 

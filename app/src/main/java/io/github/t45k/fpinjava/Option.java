@@ -8,11 +8,11 @@ public sealed interface Option<A> extends Monad<A> permits Option.Some, Option.N
     record Some<A>(A value) implements Option<A> {
     }
 
-    final class None<A> implements Option<A> {
+    final class None implements Option {
         private None() {
         }
 
-        public static final None INSTANCE = new None<>();
+        public static final None INSTANCE = new None();
     }
 
     static <B> Option<B> of(final B value) {
@@ -22,7 +22,7 @@ public sealed interface Option<A> extends Monad<A> permits Option.Some, Option.N
     // @formatter:off
     default <B> Option<B> flatMap(final Function<A, Option<B>> function) {
         return switch (this) {
-            case None<A> none -> None.INSTANCE;
+            case None none -> None.INSTANCE;
             case Some<A>(var value) -> function.apply(value);
         };
     }
@@ -35,7 +35,7 @@ public sealed interface Option<A> extends Monad<A> permits Option.Some, Option.N
     // @formatter:off
     default <B extends A> A getOrElse(final B alt) {
         return switch (this) {
-            case None<A> none -> alt;
+            case None none -> alt;
             case Some<A>(var value) -> value;
         };
     }
@@ -43,7 +43,7 @@ public sealed interface Option<A> extends Monad<A> permits Option.Some, Option.N
 
     default <B extends A> Option<? extends A> orElse(final Option<B> alt) {
         return switch (this) {
-            case None<A> none -> alt;
+            case None none -> alt;
             case Some<A> some -> some;
         };
     }
