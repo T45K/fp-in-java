@@ -9,6 +9,7 @@ public record State<S, A>(Function<S, Tuple2<A, S>> run) implements Monad<A> {
         return new State<>(s -> new Tuple2<>(value, s));
     }
 
+    // flatMap は今までの状態を捻じ曲げれる
     public <B> State<S, B> flatMap(final Function<A, State<S, B>> function) {
         return new State<>(s -> {
             final Tuple2<A, S> tuple = this.run().apply(s);
@@ -16,6 +17,7 @@ public record State<S, A>(Function<S, Tuple2<A, S>> run) implements Monad<A> {
         });
     }
 
+    // map は今までの状態を保持する（値の変換だけを行う）
     public <B> State<S, B> map(final Function<A, B> function) {
         return this.flatMap(function.andThen(State::of));
     }
